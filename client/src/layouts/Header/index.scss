@@ -1,0 +1,17 @@
+header {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header {
+    ul {
+      margin: 20px;
+      display: flex;
+      gap: 2rem;
+      li {
+        color: #000;
+      }
+    }
+  }
+}

@@ -1,7 +1,19 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
 const Schema = mongoose.Schema;
 const app = express();
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
+app.use(cors());
+
 const port = 8080;
 
 const ShopSchema = new Schema({
@@ -45,16 +57,23 @@ app.get("/api/shops/:id", async (req, res) => {
 });
 app.delete("/api/shops/:id", async (req, res) => {
   const { id } = req.params;
-
   try {
     const deletedShop = await ShopModel.findByIdAndDelete(id);
 
     res.status(200).send({ message: "deleted", deletedShop: deletedShop });
   } catch (error) {
-    res.status(404).send({ message: "not found" });
+    res.status(500).send({ message: error.message });
   }
 });
-app.post("/api/shops", async (req, res) => {});
+app.post("/api/shops", async (req, res) => {
+  try {
+    const newShop = new ShopModel(req.body);
+    await newShop.save();
+    res.status(201).send({ message: "posted", newShop: newShop });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
 
 mongoose.connect(DB_URL).then(() => {
   console.log("Connected!");
